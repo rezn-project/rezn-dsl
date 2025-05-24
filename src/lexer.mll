@@ -32,3 +32,7 @@ rule read = parse
   | '"' ([^ '"']* as s) '"' { STRINGLIT s }
   | eof                   { EOF }
   | _                     { failwith "Unrecognized token" }
+
+{
+  let token = read
+}

@@ -1,21 +1,6 @@
 %{
 open Ast
 
-module VarEnv = struct
-  let params = ref []
-  let fields = ref []
-
-  let reset () = params := []; fields := []
-
-  let add_param name = params := name :: !params
-  let add_field name = fields := name :: !fields
-
-  let classify name =
-    if List.mem name !params then Param
-    else if List.mem name !fields then Field
-    else Local  (* fallback *)
-end
-
 let empty_contract = {
   pre = None;
   post = None;
@@ -69,8 +54,14 @@ fields:
     { $1 }
 
 field:
-  | IDENT ASSIGN expr
-    { Field($1, $3) }
+  | IDENT ASSIGN expr {
+      match $3 with
+      | IntLit i      -> IntField($1, i)
+      | StringLit s   -> StringField($1, s)
+      | ListLit xs    -> ListField($1, xs)
+      | _ -> failwith ("Unsupported field value for field " ^ $1)
+    }
+
 
 contract_block:
   | CONTRACT LBRACE contract_clauses RBRACE
