@@ -1,0 +1,10 @@
+(executable
+ (name main)
+ (modules ast ir irgen lexer parser typecheck codegen main)
+ (libraries ))
+
+(menhir
+ (modules parser))
+
+(ocamllex
+ (modules lexer))
