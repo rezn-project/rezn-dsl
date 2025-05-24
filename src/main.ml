@@ -37,7 +37,7 @@ let print_declaration = function
         | ListField (k, vs) -> Printf.printf "  %s = %s\n" k (string_of_expr (ListLit vs))
       ) fields;
       Printf.printf "  Contract:\n%s" (string_of_contract contract)
-  | Service (name, fields, contract) ->
+  | Service (name, _fields, _contract) ->
       Printf.printf "SERVICE %s\n" name;
       (* same as above *)
   | Volume (name, fields) ->
