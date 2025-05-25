@@ -1,6 +1,6 @@
 (executable
  (name main)
- (modules ast lexer parser codegen main)
+ (modules ast frontend lexer parser codegen main)
  (libraries yojson))
 
 (menhir
