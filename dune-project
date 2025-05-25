@@ -1,6 +1,6 @@
 (lang dune 3.17)
 
-(name reznc)
+(name rezn-dsl)
 
 (generate_opam_files true)
 
@@ -14,3 +14,14 @@
  (github rezn-project/rezn-dsl))
 
 (using menhir 2.1)
+
+(package
+ (allow_empty)
+ (name rezn-dsl)
+ (synopsis "DSL for Rezn")
+ (description "Rezn is a domain-specific language (DSL) for Rezn")
+ (depends
+  (menhir
+   (>= 2.1.0))
+  yojson
+  ppx_expect))
