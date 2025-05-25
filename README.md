@@ -1,8 +1,25 @@
 # rezn-dsl
 
-Basic example
+A minimal infrastructure DSL with native parsing, typed fields, and JSON output.
 
-```
+## Status
+
+Alpha status. It parses a declarative configuration language and emits structured JSON. Intended as a foundation for contract-enforced infrastructure definitions.
+
+## Features
+
+- Parser implemented in OCaml with Menhir and ocamllex
+- Typed literals: `int`, `string`, `bool`, `list`
+- Top-level declarations: `pod`, `service`, `volume`, `enum`
+- Emits JSON as intermediate representation (IR)
+- Lexer and parser written from scratch
+- Single binary CLI
+
+## Example
+
+Input file `nginx.rezn`:
+
+```rezn
 pod "nginx" {
   image = "nginx:alpine"
   replicas = 2
@@ -15,27 +32,63 @@ service "nginx-service" {
   port = 80
 }
 
-volume "shared-cache" {
-  mount = "/cache"
-}
-
 enum "env" {
-  "dev", "staging", "prod"
+  "dev", "prod"
 }
-```
+````
 
-Future example with contracts:
+Output (formatted):
 
-```
-pod "auth" {
-  image = "ghcr.io/app/auth:latest"
-  replicas = 3
-  ports = [8080]
-
-  contract {
-    pre  = image.exists && env.has("JWT_SECRET")
-    post = pod.state == PodState.STATE_RUNNING && all(pod.replicas, r -> r.ready)
-    invariant = zone.distributed && ports.unique
+```json
+[
+  {
+    "kind": "pod",
+    "name": "nginx",
+    "fields": {
+      "image": "nginx:alpine",
+      "replicas": 2,
+      "ports": [80, 443],
+      "secure": true
+    }
+  },
+  {
+    "kind": "service",
+    "name": "nginx-service",
+    "fields": {
+      "selector": "nginx",
+      "port": 80
+    }
+  },
+  {
+    "kind": "enum",
+    "name": "env",
+    "options": ["dev", "prod"]
   }
-}
+]
 ```
+
+## Build
+
+Requires OCaml, Dune, and Menhir.
+
+```bash
+opam install dune yojson menhir
+dune build
+```
+
+## Run
+
+```bash
+dune exec rezn examples/nginx.rezn
+```
+
+## Roadmap
+
+- Field validation
+- Type annotations and schemas
+- Contracts (pre, post, invariant)
+- Imports and modules
+- Binary IR format
+- IR signing and signature verification
+
+
