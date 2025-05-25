@@ -1,0 +1,41 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: 5.3.0
+
+      - name: Install deps
+        run: opam install . --deps-only --with-test -y
+
+      - name: Build
+        run: dune build
+
+      - name: Run tests
+        run: dune runtest
+
+      - name: Copy binary
+        run: |
+          mkdir -p dist
+          cp _build/default/bin/main.exe dist/reznc
+
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/reznc
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
