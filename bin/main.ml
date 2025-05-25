@@ -1,4 +1,4 @@
-open Frontend
+open Rezn.Frontend
 
 let () =
   if Array.length Sys.argv <> 2 then begin
@@ -9,14 +9,14 @@ let () =
   let filename = Sys.argv.(1) in
   try
     let prog = parse_file filename in
-    let json = Codegen.program_to_json prog in
+    let json = Rezn.Codegen.program_to_json prog in
     Yojson.Basic.pretty_to_channel stdout json;
     print_newline ()
   with
-  | Frontend.Parse_error msg ->
+  | Rezn.Frontend.Parse_error msg ->
       Printf.eprintf "%s\n" msg;
       exit 1
-  | Frontend.Lexer_error msg ->
+  | Rezn.Frontend.Lexer_error msg ->
       Printf.eprintf "Lexer error: %s\n" msg;
       exit 1
   
