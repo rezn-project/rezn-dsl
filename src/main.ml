@@ -7,8 +7,16 @@ let () =
   end;
 
   let filename = Sys.argv.(1) in
-  let prog = parse_file filename in
-  let json = Codegen.program_to_json prog in
-  Yojson.Basic.pretty_to_channel stdout json;
-  print_newline ()
+  try
+    let prog = parse_file filename in
+    let json = Codegen.program_to_json prog in
+    Yojson.Basic.pretty_to_channel stdout json;
+    print_newline ()
+  with
+  | Frontend.Parse_error msg ->
+      Printf.eprintf "%s\n" msg;
+      exit 1
+  | Frontend.Lexer_error msg ->
+      Printf.eprintf "Lexer error: %s\n" msg;
+      exit 1
   
