@@ -1,46 +1,21 @@
-type type_expr =
-  | TypeInteger
-  | TypeBoolean
-  | TypeString
+type literal =
+  | Int of int
+  | String of string
+  | Bool of bool
+  | List of literal list
 
-type var_context =
-  | Local
-  | Param
-  | Field
+type field =
+  | Field of string * literal
 
-type bin_op =
-  | Add | Sub | Mul | Div
-  | Eq | Neq | Gt | Lt | Ge | Le
-  | And | Or
+type pod_decl = string * field list
+type svc_decl = string * field list
+type volume_decl = string * field list
+type enum_decl = string * string list
 
-type unary_op =
-  | Not | Neg
+type decl =
+  | Pod of pod_decl
+  | Service of svc_decl
+  | Volume of volume_decl
+  | Enum of enum_decl
 
-type expr =
-  | IntLit of int
-  | StringLit of string
-  | BoolLit of bool
-  | Var of string
-  | FieldAccess of expr * string
-  | BinOp of bin_op * expr * expr
-  | Call of string * expr list
-  | ListLit of expr list  (* <--- add this *)
-
-
-type declaration =
-  | Pod of string * field list * contract
-  | Service of string * field list * contract
-  | Volume of string * field list
-  | Enum of string * string list
-
-and contract = {
-  pre       : expr option;
-  post      : expr option;
-  invariant : expr option;
-}
-
-and field =
-  | IntField of string * int
-  | StringField of string * string
-  | ListField of string * expr list
-
+type program = decl list

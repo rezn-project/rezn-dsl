@@ -1,7 +1,7 @@
 (executable
  (name main)
- (modules ast ir irgen lexer parser typecheck codegen main)
- (libraries ))
+ (modules ast lexer parser codegen main)
+ (libraries yojson))
 
 (menhir
  (modules parser))
