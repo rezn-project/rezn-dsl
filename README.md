@@ -82,6 +82,12 @@ dune build
 dune exec rezn examples/nginx.rezn
 ```
 
+## Running Tests
+
+```bash
+dune runtest
+````
+
 ## Roadmap
 
 - Field validation
