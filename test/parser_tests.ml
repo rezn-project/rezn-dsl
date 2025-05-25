@@ -6,12 +6,4 @@ let%expect_test "parsing a minimal pod" =
   let prog = parse_string source in
   let json = Rezn.Codegen.program_to_json prog in
   json |> pretty_to_string |> print_endline;
-  [%expect {|
-    {
-      "kind": "pod",
-      "name": "x",
-      "fields": [
-        { "name": "image", "value": "nginx" }
-      ]
-    }
-  |}]
+  [%expect {| [ { "kind": "pod", "name": "x", "fields": { "image": "nginx" } } ] |}]
