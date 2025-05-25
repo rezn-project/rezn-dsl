@@ -1,5 +1,3 @@
-(lang dune 2.8)
+(lang dune 3.10)
 
-(name rezn)
-
-(using menhir 2.1)
+(name rezn_dsl)

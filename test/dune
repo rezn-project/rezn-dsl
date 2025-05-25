@@ -1,0 +1,13 @@
+(library
+ (name rezn_test)
+ (modules parser_tests)
+ (libraries rezn yojson ppx_expect)
+ (preprocess
+  (pps ppx_expect)))
+
+(test
+ (name parser_tests_runner)
+ (modules parser_tests_runner)
+ (libraries rezn_test ppx_expect.runner)
+ (preprocess
+  (pps ppx_expect)))

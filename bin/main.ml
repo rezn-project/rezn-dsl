@@ -1,6 +1,6 @@
-open Lexing
-open Codegen
 open In_channel
+open Rezn.Ast
+open Rezn.Codegen
 
 let () =
   if Array.length Sys.argv <> 2 then begin
@@ -14,12 +14,12 @@ let () =
     let lexbuf = Lexing.from_channel chan in
 
     try
-      let prog = Parser.program Lexer.token lexbuf in
+      let prog = Rezn.Parser.program Rezn.Lexer.token lexbuf in
       let json = program_to_json prog in
       Yojson.Basic.pretty_to_channel stdout json;
       print_newline ()
     with
-    | Parser.Error ->
+    | Rezn.Parser.Error ->
         let pos = lexbuf.lex_curr_p in
         Printf.eprintf "Syntax error at line %d, column %d\n"
           pos.pos_lnum (pos.pos_cnum - pos.pos_bol);

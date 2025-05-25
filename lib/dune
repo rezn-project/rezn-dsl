@@ -1,0 +1,3 @@
+(library
+ (name rezn)
+ (libraries yojson))
