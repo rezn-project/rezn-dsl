@@ -32,7 +32,7 @@ decl:
   | VOLUME STRING LBRACE field_list RBRACE
       { Volume ($2, $4) }
   | ENUM STRING LBRACE string_list RBRACE
-      { Enum ($2, $4) }
+    { Enum ($2, List.rev $4) }
 
 field_list:
   | /* empty */         { [] }
@@ -48,12 +48,15 @@ literal:
   | STRING              { String $1 }
   | TRUE                { Bool true }
   | FALSE               { Bool false }
-  | LBRACK literal_list RBRACK { List $2 }
+  | LBRACK literal_list RBRACK { List(List.rev $2) }
 
 literal_list:
-  | literal                     { [$1] }
-  | literal_list COMMA literal { $1 @ [$3] }
+  | /* empty */                 { [] }
+  | literal                    { [$1] }
+  | literal COMMA literal_list { $1 :: $3 }
 
 string_list:
+  | /* empty */                 { [] }
   | STRING                      { [$1] }
-  | string_list COMMA STRING   { $1 @ [$3] }
+  | STRING COMMA string_list   { $1 :: $3 }
+
