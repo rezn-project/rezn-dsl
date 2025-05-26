@@ -7,11 +7,14 @@ let generate_signed_bundle (prog : Rezn.Ast.program) (sk : Sodium.secret Sodium.
   let signature = Sodium.Sign.Bytes.sign_detached sk (Bytes.of_string json_str) in
   let signature_bytes = Sodium.Sign.Bytes.of_signature signature in
   let sig_b64 = Base64.encode_exn (Bytes.to_string signature_bytes) in
+  let pk = Sodium.Sign.secret_key_to_public_key sk in
+  let pub_b64 = Base64.encode_exn (Bytes.to_string (Sodium.Sign.Bytes.of_public_key pk)) in
   `Assoc [
     "program", json;
     "signature", `Assoc [
       "algorithm", `String "ed25519";
       "sig", `String sig_b64;
+      "pub", `String pub_b64; (* Should be flag-driven? *)
     ]
   ]
 
