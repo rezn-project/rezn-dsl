@@ -1,7 +1,7 @@
 (library
  (name rezn)
- (modules ast frontend lexer parser codegen)
- (libraries yojson))
+ (modules ast frontend lexer parser codegen sign)
+ (libraries yojson sodium))
 
 (menhir
  (modules parser))

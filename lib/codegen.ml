@@ -38,5 +38,5 @@ let decl_to_json = function
         ("options", `List (List.map (fun s -> `String s) options))
       ]
 
-let program_to_json (prog : program) : Yojson.Basic.t =
+let program_to_json (prog : program) : Yojson.Safe.t =
   `List (List.map decl_to_json prog)

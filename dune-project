@@ -21,6 +21,8 @@
  (synopsis "DSL for Rezn")
  (description "Rezn is a domain-specific language (DSL) for Rezn")
  (depends
+  base64
+  sodium
   (menhir
    (>= 2.1.0))
   yojson

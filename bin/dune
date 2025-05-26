@@ -1,4 +1,4 @@
 (executable
  (name main)
  (modules main)
- (libraries rezn yojson))
+ (libraries rezn base64 yojson))

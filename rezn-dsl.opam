@@ -9,6 +9,8 @@ homepage: "https://github.com/rezn-project/rezn-dsl"
 bug-reports: "https://github.com/rezn-project/rezn-dsl/issues"
 depends: [
   "dune" {>= "3.17"}
+  "base64"
+  "sodium"
   "menhir" {>= "2.1.0"}
   "yojson"
   "ppx_expect"
