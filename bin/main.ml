@@ -1,13 +1,21 @@
 open Rezn.Frontend
+open Cmdliner
 
-let () =
-  if Array.length Sys.argv <> 2 then begin
-    Printf.eprintf "Usage: %s <file.rezn>\n" Sys.argv.(0);
-    exit 1
-  end;
+let generate_signed_bundle (prog : Rezn.Ast.program) (sk : Sodium.secret Sodium.Sign.key) : Yojson.Safe.t =
+  let json = Rezn.Codegen.program_to_json prog in
+  let json_str = Yojson.Safe.pretty_to_string json in
+  let signature = Sodium.Sign.Bytes.sign_detached sk (Bytes.of_string json_str) in
+  let signature_bytes = Sodium.Sign.Bytes.of_signature signature in
+  let sig_b64 = Base64.encode_exn (Bytes.to_string signature_bytes) in
+  `Assoc [
+    "program", json;
+    "signature", `Assoc [
+      "algorithm", `String "ed25519";
+      "sig", `String sig_b64;
+    ]
+  ]
 
-  let filename = Sys.argv.(1) in
-  
+let run input_file output_file_opt =
   try
     Rezn.Sign.ensure_keys ();
 
@@ -17,35 +25,52 @@ let () =
     in
     let sk = Sodium.Sign.Bytes.to_secret_key sk_bytes in
 
-    let prog = parse_file filename in
-    let json = Rezn.Codegen.program_to_json prog in
-    let json_str = Yojson.Safe.pretty_to_string json in
+    let prog = parse_file input_file in
+    let bundle = generate_signed_bundle prog sk in
+    let json_str = Yojson.Safe.pretty_to_string bundle in
 
-    let signature = Sodium.Sign.Bytes.sign_detached sk (Bytes.of_string json_str) in
-    let signature_in_bytes = Sodium.Sign.Bytes.of_signature signature in
+    (match output_file_opt with
+     | Some path ->
+         let oc = open_out path in
+         output_string oc json_str;
+         close_out oc
+     | None ->
+         print_endline json_str);
 
-    let bundle =
-      `Assoc [
-        "program", json;
-        "signature", `Assoc [
-          "algorithm", `String "ed25519";
-          "sig", `String (Base64.encode_exn (Bytes.to_string (signature_in_bytes)));
-        ]
-      ]
-    in
-
-    (* Output the signed bundle *)
-    let oc = open_out "output.reznbundle.json" in
-    Yojson.Safe.pretty_to_channel oc bundle;
-    close_out oc;
-
-
-    print_newline ()
+    exit 0
   with
   | Rezn.Frontend.Parse_error msg ->
-      Printf.eprintf "%s\n" msg;
+      prerr_endline msg;
       exit 1
   | Rezn.Frontend.Lexer_error msg ->
-      Printf.eprintf "Lexer error: %s\n" msg;
+      prerr_endline ("Lexer error: " ^ msg);
       exit 1
-  
+  | exn ->
+      prerr_endline ("Unhandled error: " ^ Printexc.to_string exn);
+      exit 2
+
+(* CLI boilerplate *)
+
+let input_file =
+  let doc = "The .rezn source file to compile and sign." in
+  Arg.(required & pos 0 (some file) None & info [] ~docv:"REZN_FILE" ~doc)
+
+let output_file =
+  let doc = "Optional output path. If omitted, signed bundle is printed to stdout." in
+  Arg.(value & opt (some string) None & info ["o"; "output"] ~docv:"FILE" ~doc)
+
+let cmd_term =
+  Term.(const run $ input_file $ output_file)
+
+let cmd_info =
+  let doc = "Compile and cryptographically sign a Rezn IR program" in
+  let man = [
+    `S Manpage.s_description;
+    `P "Reads a .rezn file, emits JSON IR, and attaches an Ed25519 signature to it.";
+    `P "The signature proves authenticity and prevents tampering of the infrastructure spec.";
+  ] in
+  Cmd.info "reznc" ~doc ~man
+
+let cmd = Cmd.v cmd_info cmd_term
+
+let () = Stdlib.exit @@ Cmd.eval cmd
