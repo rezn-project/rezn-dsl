@@ -30,3 +30,5 @@ _opam/
 
 rezn.key
 rezn.pub
+
+*.ir.json
