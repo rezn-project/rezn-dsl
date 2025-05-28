@@ -19,6 +19,11 @@ jobs:
         with:
           ocaml-compiler: 5.3.0
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsodium-dev
+
       - name: Install deps
         run: opam install . --deps-only --with-test
 
@@ -31,11 +36,19 @@ jobs:
       - name: Copy binary
         run: |
           mkdir -p dist
-          cp _build/default/bin/main.exe dist/reznc
+          cp _build/default/reznc/main.exe dist/reznc
+          cp _build/default/server/main.exe dist/server
+          cp _build/default/verify/main.exe dist/verify
+      
+      - name: Make binaries executable
+        run: |
+          chmod +x dist/reznc
+          chmod +x dist/server
+          chmod +x dist/verify
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/reznc
+          files: dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}

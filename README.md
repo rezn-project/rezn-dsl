@@ -71,6 +71,12 @@ Output (formatted):
 
 `./_build/default/server/main.exe ` -> `Signer service ready on /tmp/rezn_signer.sock`
 
+#### Setup
+
+The commands here assume you have installed `socat`, i.e.
+
+`sudo apt install socat`
+
 #### Signing
 
 **Once a bundle has been signed and verified, treat the JSON as strictly read-only.**
@@ -98,8 +104,8 @@ should emit (below example is pretty-printed):
           "image": "nginx:alpine",
           "replicas": 2,
           "ports": [
-            443,
-            80
+            80,
+            443
           ],
           "secure": true
         }
