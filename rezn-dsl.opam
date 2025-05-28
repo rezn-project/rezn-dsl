@@ -15,7 +15,7 @@ depends: [
   "sodium"
   "menhir" {>= "2.1.0"}
   "yojson" {>= "2.2.2"}
-  "ppx_expect" {= "0.17.2"}
+  "ppx_expect"
   "odoc" {with-doc}
 ]
 build: [
