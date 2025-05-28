@@ -67,6 +67,66 @@ Output (formatted):
 ]
 ```
 
+### Running the Unix socket
+
+`./_build/default/server/main.exe ` -> `Signer service ready on /tmp/rezn_signer.sock`
+
+`cat ./examples/basic-example.rezn | jq -Rs '{op: "sign", source: .}' | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
+
+should emit (below example is pretty-printed):
+
+```json
+{
+  "status": "ok",
+  "bundle": {
+    "program": [
+      {
+        "kind": "pod",
+        "name": "nginx",
+        "fields": {
+          "image": "nginx:alpine",
+          "replicas": 2,
+          "ports": [
+            443,
+            80
+          ],
+          "secure": true
+        }
+      },
+      {
+        "kind": "service",
+        "name": "nginx-service",
+        "fields": {
+          "selector": "nginx",
+          "port": 80
+        }
+      },
+      {
+        "kind": "volume",
+        "name": "shared-cache",
+        "fields": {
+          "mount": "/cache"
+        }
+      },
+      {
+        "kind": "enum",
+        "name": "env",
+        "options": [
+          "prod",
+          "staging",
+          "dev"
+        ]
+      }
+    ],
+    "signature": {
+      "algorithm": "ed25519",
+      "sig": "FHD0qZUpHsma5OPUc7mvNvjrE44Oc/R27GEUrtdf8gkb/azm4uTUcgY2H9Szo4Otw3VlYLhOjZlErnEffv6oCA==",
+      "pub": "MWf0xdBZrWtyrMhpvrv3y0AAtEjHYgMLviEsWtadang="
+    }
+  }
+}
+```
+
 ## Build
 
 Requires OCaml, Dune, and Menhir.
