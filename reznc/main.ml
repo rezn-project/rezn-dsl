@@ -3,7 +3,7 @@ open Cmdliner
 
 let run input_file output_file_opt =
   try
-    Rezn.Sign.ensure_keys ();
+    Rezn.Keys.ensure_keys ();
 
     let sk = Rezn.Keys.get_sk () in
 

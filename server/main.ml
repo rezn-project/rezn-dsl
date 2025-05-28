@@ -6,7 +6,7 @@ let () =
   Unix.bind sock (Unix.ADDR_UNIX socket_path);
   Unix.listen sock 5;
 
-  Rezn.Sign.ensure_keys ();
+  Rezn.Keys.ensure_keys ();
 
   let sk = Rezn.Keys.get_sk () in
 
@@ -28,9 +28,9 @@ let () =
           | `Assoc [ ("op", `String "sign"); ("source", `String src) ] ->
               let bundle = Rezn.Frontend.sign_program_string src sk in
               `Assoc [ "status", `String "ok"; "bundle", bundle ]
-          | `Assoc [ ("op", `String "verify"); ("bundle", _bundle) ] ->
-              let valid = false in
-              `Assoc [ "status", `String "ok"; "verified", `Bool valid ]
+          | `Assoc [ ("op", `String "verify"); ("bundle", bundle_json) ] ->
+            let valid = Rezn.Verify.verify_bundle bundle_json in
+            `Assoc [ "status", `String "ok"; "verified", `Bool valid ]
           | _ ->
               `Assoc [ "status", `String "error"; "message", `String "Invalid request format" ]
         with exn ->

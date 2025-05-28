@@ -71,6 +71,8 @@ Output (formatted):
 
 `./_build/default/server/main.exe ` -> `Signer service ready on /tmp/rezn_signer.sock`
 
+#### Signing
+
 `cat ./examples/basic-example.rezn | jq -Rs '{op: "sign", source: .}' | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
 
 should emit (below example is pretty-printed):
@@ -126,6 +128,14 @@ should emit (below example is pretty-printed):
   }
 }
 ```
+
+#### Verifying
+
+`jq '{op: "verify", bundle: .}' ./examples/basic-example.ir.json | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
+
+Should emit
+
+`{"status":"ok","verified":true}`
 
 ## Build
 
