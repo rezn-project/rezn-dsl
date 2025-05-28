@@ -7,11 +7,8 @@ let () =
   Unix.listen sock 5;
 
   Rezn.Sign.ensure_keys ();
-  let sk_bytes =
-    let ic = open_in_bin Rezn.Sign.key_file in
-    really_input_string ic 64 |> Bytes.of_string
-  in
-  let sk = Sodium.Sign.Bytes.to_secret_key sk_bytes in
+
+  let sk = Rezn.Keys.get_sk () in
 
   Printf.printf "Signer service ready on %s\n%!" socket_path;
 
@@ -20,6 +17,7 @@ let () =
     let in_chan = Unix.in_channel_of_descr client in
     let out_chan = Unix.out_channel_of_descr client in
     try
+      
       let req_body = really_input_string in_chan (in_channel_length in_chan) in
 
       let response =

@@ -8,13 +8,16 @@ let ensure_keys () =
     let sk, pk = Sodium.Sign.random_keypair () in
     let sk_bytes = Sodium.Sign.Bytes.of_secret_key sk in
     let pk_bytes = Sodium.Sign.Bytes.of_public_key pk in
-    let out = open_out_bin key_file in
-    output_bytes out sk_bytes;
-    close_out out;
-    let out_pub = open_out_bin pub_file in
-    output_bytes out_pub pk_bytes;
-    close_out out_pub
+
+    Out_channel.with_open_bin key_file (fun out ->
+      Out_channel.output_bytes out sk_bytes
+    );
+
+    Out_channel.with_open_bin pub_file (fun out_pub ->
+      Out_channel.output_bytes out_pub pk_bytes
+    )
   )
+
 
 let sign_json sk json_str =
   let msg = Bytes.of_string json_str in

@@ -5,11 +5,7 @@ let run input_file output_file_opt =
   try
     Rezn.Sign.ensure_keys ();
 
-    let sk_bytes =
-      let ic = open_in_bin Rezn.Sign.key_file in
-      really_input_string ic 64 |> Bytes.of_string
-    in
-    let sk = Sodium.Sign.Bytes.to_secret_key sk_bytes in
+    let sk = Rezn.Keys.get_sk () in
 
     let prog = parse_file input_file in
     let bundle = Rezn.Sign.generate_signed_bundle prog sk in
@@ -23,7 +19,7 @@ let run input_file output_file_opt =
      | None ->
          print_endline json_str);
 
-    exit 0
+    ()
   with
   | Rezn.Frontend.Parse_error msg ->
       prerr_endline msg;
