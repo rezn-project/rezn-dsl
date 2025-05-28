@@ -25,9 +25,14 @@
    (and
     (>= 3.5.0)
     (< 4.0.0)))
-  digestif
+  (cmdliner
+   (>= 1.3.0))
+  (digestif
+   (>= 1.3.0))
   sodium
   (menhir
    (>= 2.1.0))
-  yojson
-  ppx_expect))
+  (yojson
+   (>= 2.2.2))
+  (ppx_expect
+   (= 0.17.2))))
