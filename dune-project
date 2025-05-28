@@ -22,6 +22,7 @@
  (description "Rezn is a domain-specific language (DSL) for Rezn")
  (depends
   base64
+  digestif
   sodium
   (menhir
    (>= 2.1.0))

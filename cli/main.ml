@@ -1,23 +1,6 @@
 open Rezn.Frontend
 open Cmdliner
 
-let generate_signed_bundle (prog : Rezn.Ast.program) (sk : Sodium.secret Sodium.Sign.key) : Yojson.Safe.t =
-  let json = Rezn.Codegen.program_to_json prog in
-  let json_str = Yojson.Safe.pretty_to_string json in
-  let signature = Sodium.Sign.Bytes.sign_detached sk (Bytes.of_string json_str) in
-  let signature_bytes = Sodium.Sign.Bytes.of_signature signature in
-  let sig_b64 = Base64.encode_exn (Bytes.to_string signature_bytes) in
-  let pk = Sodium.Sign.secret_key_to_public_key sk in
-  let pub_b64 = Base64.encode_exn (Bytes.to_string (Sodium.Sign.Bytes.of_public_key pk)) in
-  `Assoc [
-    "program", json;
-    "signature", `Assoc [
-      "algorithm", `String "ed25519";
-      "sig", `String sig_b64;
-      "pub", `String pub_b64; (* Should be flag-driven? *)
-    ]
-  ]
-
 let run input_file output_file_opt =
   try
     Rezn.Sign.ensure_keys ();
@@ -29,7 +12,7 @@ let run input_file output_file_opt =
     let sk = Sodium.Sign.Bytes.to_secret_key sk_bytes in
 
     let prog = parse_file input_file in
-    let bundle = generate_signed_bundle prog sk in
+    let bundle = Rezn.Sign.generate_signed_bundle prog sk in
     let json_str = Yojson.Safe.pretty_to_string bundle in
 
     (match output_file_opt with
@@ -51,8 +34,6 @@ let run input_file output_file_opt =
   | exn ->
       prerr_endline ("Unhandled error: " ^ Printexc.to_string exn);
       exit 2
-
-(* CLI boilerplate *)
 
 let input_file =
   let doc = "The .rezn source file to compile and sign." in

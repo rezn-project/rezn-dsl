@@ -10,6 +10,7 @@ bug-reports: "https://github.com/rezn-project/rezn-dsl/issues"
 depends: [
   "dune" {>= "3.17"}
   "base64"
+  "digestif"
   "sodium"
   "menhir" {>= "2.1.0"}
   "yojson"
