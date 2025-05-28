@@ -31,3 +31,7 @@ let parse_string (source : string) : program =
       raise (Parse_error msg)
   | Failure msg ->
       raise (Lexer_error msg)
+
+let sign_program_string (src : string) (sk : Sodium.secret Sodium.Sign.key) : Yojson.Safe.t =
+  let prog = parse_string src in
+  Sign.generate_signed_bundle prog sk

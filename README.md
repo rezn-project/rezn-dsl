@@ -67,6 +67,91 @@ Output (formatted):
 ]
 ```
 
+### Running the Unix socket
+
+`./_build/default/server/main.exe ` -> `Signer service ready on /tmp/rezn_signer.sock`
+
+#### Setup
+
+The commands here assume you have installed `socat`, i.e.
+
+`sudo apt install socat`
+
+#### Signing
+
+**Once a bundle has been signed and verified, treat the JSON as strictly read-only.**
+
+Do **not** reformat, reserialize, pretty-print, or modify the JSON in any way.
+
+> Even changes that appear trivial — such as field reordering, whitespace adjustments,
+> or float formatting — will cause the signature to become invalid. The bundle exists
+> to be **verified, not edited**. If you need to change the program, update the original
+> `.rezn` source and re-sign it.
+
+`cat ./examples/basic-example.rezn | jq -Rs '{op: "sign", source: .}' | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
+
+should emit (below example is pretty-printed):
+
+```json
+{
+  "status": "ok",
+  "bundle": {
+    "program": [
+      {
+        "kind": "pod",
+        "name": "nginx",
+        "fields": {
+          "image": "nginx:alpine",
+          "replicas": 2,
+          "ports": [
+            80,
+            443
+          ],
+          "secure": true
+        }
+      },
+      {
+        "kind": "service",
+        "name": "nginx-service",
+        "fields": {
+          "selector": "nginx",
+          "port": 80
+        }
+      },
+      {
+        "kind": "volume",
+        "name": "shared-cache",
+        "fields": {
+          "mount": "/cache"
+        }
+      },
+      {
+        "kind": "enum",
+        "name": "env",
+        "options": [
+          "prod",
+          "staging",
+          "dev"
+        ]
+      }
+    ],
+    "signature": {
+      "algorithm": "ed25519",
+      "sig": "FHD0qZUpHsma5OPUc7mvNvjrE44Oc/R27GEUrtdf8gkb/azm4uTUcgY2H9Szo4Otw3VlYLhOjZlErnEffv6oCA==",
+      "pub": "MWf0xdBZrWtyrMhpvrv3y0AAtEjHYgMLviEsWtadang="
+    }
+  }
+}
+```
+
+#### Verifying
+
+`jq '{op: "verify", bundle: .}' ./examples/basic-example.ir.json | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
+
+Should emit
+
+`{"status":"ok","verified":true}`
+
 ## Build
 
 Requires OCaml, Dune, and Menhir.
