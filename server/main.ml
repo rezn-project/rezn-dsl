@@ -17,8 +17,10 @@ let () =
     let in_chan = Unix.in_channel_of_descr client in
     let out_chan = Unix.out_channel_of_descr client in
     try
-      
-      let req_body = really_input_string in_chan (in_channel_length in_chan) in
+      let buf = Buffer.create 1024 in
+        (try while true do Buffer.add_channel buf in_chan 1024 done
+        with End_of_file -> ());
+      let req_body = Buffer.contents buf in
 
       let response =
         try

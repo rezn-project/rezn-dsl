@@ -2,21 +2,25 @@ let key_file = "rezn.key"
 let pub_file = "rezn.pub"
 
 let ensure_keys () =
-  if not (Sys.file_exists key_file) then (
+  try
+    let fd =
+      Unix.openfile key_file [ Unix.O_WRONLY; Unix.O_CREAT; Unix.O_EXCL ] 0o600
+    in
     Printf.printf "Generating new Ed25519 keypair...\n%!";
     Sodium.Random.stir ();
     let sk, pk = Sodium.Sign.random_keypair () in
     let sk_bytes = Sodium.Sign.Bytes.of_secret_key sk in
     let pk_bytes = Sodium.Sign.Bytes.of_public_key pk in
 
-    Out_channel.with_open_bin key_file (fun out ->
-      Out_channel.output_bytes out sk_bytes
-    );
+    let out = Unix.out_channel_of_descr fd in
+    Out_channel.output_bytes out sk_bytes;
+    Out_channel.close out;
 
     Out_channel.with_open_bin pub_file (fun out_pub ->
       Out_channel.output_bytes out_pub pk_bytes
     )
-  )
+  with Unix.Unix_error (Unix.EEXIST, _, _) ->
+    () (* Key already exists — do nothing *)
 
 
 let sign_json sk json_str =
