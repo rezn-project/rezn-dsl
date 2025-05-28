@@ -73,6 +73,15 @@ Output (formatted):
 
 #### Signing
 
+**Once a bundle has been signed and verified, treat the JSON as strictly read-only.**
+
+Do **not** reformat, reserialize, pretty-print, or modify the JSON in any way.
+
+> Even changes that appear trivial — such as field reordering, whitespace adjustments,
+> or float formatting — will cause the signature to become invalid. The bundle exists
+> to be **verified, not edited**. If you need to change the program, update the original
+> `.rezn` source and re-sign it.
+
 `cat ./examples/basic-example.rezn | jq -Rs '{op: "sign", source: .}' | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
 
 should emit (below example is pretty-printed):
