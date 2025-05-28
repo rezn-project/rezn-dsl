@@ -24,8 +24,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libsodium-dev
 
+      - name: Pin ahrefs's sodium fork
+        run: |
+          opam pin add sodium https://github.com/ahrefs/ocaml-sodium.git -y
+          opam update
+
       - name: Install deps
-        run: opam install . --deps-only --with-test
+        run: |
+          opam install . --deps-only --with-test -y
 
       - name: Build
         run: opam exec -- dune build
@@ -33,18 +39,15 @@ jobs:
       - name: Run tests
         run: opam exec -- dune runtest
 
-      - name: Copy binary
+      - name: Copy binaries
         run: |
           mkdir -p dist
           cp _build/default/reznc/main.exe dist/reznc
           cp _build/default/server/main.exe dist/server
           cp _build/default/verify/main.exe dist/verify
-      
+
       - name: Make binaries executable
-        run: |
-          chmod +x dist/reznc
-          chmod +x dist/server
-          chmod +x dist/verify
+        run: chmod +x dist/*
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v2
