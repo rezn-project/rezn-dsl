@@ -1,0 +1,24 @@
+[Unit]
+Description=Rezn DSL is a minimal infrastructure DSL with native parsing, typed fields, and ed25519-signed JSON output
+After=network.target
+
+[Service]
+Type=simple
+User=rezndsl
+Group=rezndsl
+WorkingDirectory=/opt/rezndsl
+EnvironmentFile=/etc/rezndsl/rezndsl.env
+ExecStart=/opt/rezndsl/server
+StandardOutput=append:/var/log/rezndsl/server.log
+StandardError=inherit
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+
+PrivateDevices=yes
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target

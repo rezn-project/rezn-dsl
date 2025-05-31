@@ -1,4 +1,4 @@
 (executable
  (name main)
  (modules main)
- (libraries rezn cmdliner yojson unix))
+ (libraries rezn cmdliner yojson threads unix))

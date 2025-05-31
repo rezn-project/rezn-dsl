@@ -1,0 +1,10 @@
+/var/log/rezndsl/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    copytruncate
+    create 640 rezndsl rezndsl
+}

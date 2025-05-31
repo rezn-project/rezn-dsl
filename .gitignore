@@ -30,3 +30,7 @@ _opam/
 
 rezn.key
 rezn.pub
+
+dist
+
+*.deb
