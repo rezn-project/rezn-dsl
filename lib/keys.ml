@@ -1,6 +1,17 @@
-let key_dir = "/etc/rezndsl"
+let default_key_dir = "/etc/rezndsl"
+let fallback_key_dir = Filename.concat (Sys.getenv_opt "XDG_RUNTIME_DIR" |> Option.value ~default:"/tmp") "rezndsl"
+
+let get_key_dir () =
+  match Sys.getenv_opt "KEY_DIR" with
+  | Some dir -> dir
+  | None ->
+      if Sys.file_exists default_key_dir then default_key_dir
+      else fallback_key_dir
+
+let key_dir = get_key_dir ()
 let key_file = Filename.concat key_dir "rezn.key"
 let pub_file = Filename.concat key_dir "rezn.pub"
+
 
 let ensure_keys () =
   let () =

@@ -69,18 +69,25 @@ let () =
     in
 
     let cleanup () =
-      close_in_noerr in_chan;
-      close_out_noerr out_chan;
-      Unix.close client_fd
+      try close_in in_chan with _ -> ();
+      try close_out out_chan with _ -> ();
+      try Unix.close client_fd with _ -> ()
     in
 
     try
-      let line = input_line in_chan in
+      let buf = Buffer.create 2048 in
+      (try
+        while true do
+          Buffer.add_channel buf in_chan 1024
+        done
+      with End_of_file -> ());
+      let raw_input = Buffer.contents buf in
+
       let response =
         try
-          match Yojson.Safe.from_string line with
+          match Yojson.Safe.from_string raw_input with
           | `Assoc [ ("op", `String "sign"); ("source", `String src) ] ->
-              let bundle = Rezn.Frontend.sign_program_string src sk in
+              let bundle = Rezn.Frontend.sign_program_string src (sk) in
               `Assoc [ "status", `String "ok"; "bundle", bundle ]
 
           | `Assoc [ ("op", `String "verify"); ("bundle", bundle_json) ] ->
