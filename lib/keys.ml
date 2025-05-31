@@ -5,7 +5,12 @@ let pub_file = Filename.concat key_dir "rezn.pub"
 let ensure_keys () =
   try
     Unix.mkdir key_dir 0o700
-  with Unix.Unix_error (Unix.EEXIST, _, _) -> ();
+  with
+  | Unix.Unix_error ((Unix.EEXIST | Unix.EISDIR), _, _) -> ()
+  | Unix.Unix_error (Unix.EACCES, _, _) as e ->
+      Printf.eprintf "Cannot create %s – permission denied. Did you run the post-install script?\n%!" key_dir;
+      raise e
+  | Unix.Unix_error _ as e -> raise e;
 
   try
     let fd =
@@ -28,7 +33,19 @@ let ensure_keys () =
     Unix.chmod key_file 0o600;
     Unix.chmod pub_file 0o644;
   with
-  | Unix.Unix_error (Unix.EEXIST, _, _) -> ()
+  | Unix.Unix_error (Unix.EEXIST, _, _) -> if (not (Sys.file_exists pub_file)) then (
+    (* derive pubkey from existing secret key *)
+    let sk =
+      In_channel.with_open_bin key_file In_channel.input_all
+      |> Bytes.of_string |> Sodium.Sign.Bytes.to_secret_key
+    in
+    let pk = Sodium.Sign.secret_key_to_public_key sk in
+    Out_channel.with_open_bin pub_file (fun ch ->
+      Out_channel.output_bytes ch (Sodium.Sign.Bytes.of_public_key pk)
+    );
+    Unix.chmod pub_file 0o644
+  );
+  
   | exn ->
       Printf.eprintf "Key generation failed: %s\n%!" (Printexc.to_string exn);
       raise exn

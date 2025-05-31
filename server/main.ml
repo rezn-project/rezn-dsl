@@ -9,7 +9,7 @@ let () =
     | Some s -> Unix.close s
     | None -> ());
     if Sys.file_exists socket_path then Unix.unlink socket_path;
-    raise Thread.Exit
+    exit 0
   in
 
   (* Graceful shutdown handlers *)
@@ -22,6 +22,12 @@ let () =
   (* Create and bind socket *)
   let socket = Unix.socket Unix.PF_UNIX Unix.SOCK_STREAM 0 in
   sock := Some socket;
+
+  let socket_dir = Filename.dirname socket_path in
+  if not (Sys.file_exists socket_dir && Sys.is_directory socket_dir) then (
+    Unix.mkdir socket_dir 0o770;
+    Unix.chmod socket_dir 0o770
+  );
 
   Unix.bind socket (Unix.ADDR_UNIX socket_path);
   Unix.listen socket backlog;
