@@ -43,10 +43,7 @@ let () =
   sock := Some socket;
 
   let socket_dir = Filename.dirname socket_path in
-  if not (Sys.file_exists socket_dir && Sys.is_directory socket_dir) then (
-    Unix.mkdir socket_dir 0o770;
-    Unix.chmod socket_dir 0o770
-  );
+  (try Unix.mkdir socket_dir 0o770 with Unix.Unix_error (Unix.EEXIST, _, _) -> ());
 
   Unix.bind socket (Unix.ADDR_UNIX socket_path);
   Unix.listen socket backlog;
