@@ -49,9 +49,12 @@ jobs:
       - name: Make binaries executable
         run: chmod +x dist/*
 
+      - name: Create tarball of binaries
+        run: tar -czvf dist/rezn-dsl.tar.gz -C dist reznc server verify
+
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*
+          files: dist/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
