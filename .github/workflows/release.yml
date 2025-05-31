@@ -49,6 +49,9 @@ jobs:
       - name: Make binaries executable
         run: chmod +x dist/*
 
+      - name: Install packaging dependencies
+        run: sudo apt-get install -y ruby ruby-dev build-essential libssl-dev && sudo gem install --no-document fpm
+
       - name: Create .deb package
         run: |
           make ARCH=amd64 RAW_VERSION=${{ github.ref_name }}
