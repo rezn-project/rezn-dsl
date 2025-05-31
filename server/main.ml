@@ -1,4 +1,23 @@
-let socket_path = "/run/rezndsl/rezn.sock"
+let default_socket_path = "/run/rezndsl/rezn.sock"
+let fallback_socket_path = "/tmp/rezn.sock"
+
+let get_socket_path () =
+  match Sys.getenv_opt "SOCKET_PATH" with
+  | Some path -> path
+  | None -> (
+      (* Check if /run/rezndsl exists and is writable *)
+      if Sys.file_exists "/run/rezndsl" then (
+        try
+          let test_file = Filename.concat "/run/rezndsl" ".rezn_write_test" in
+          let oc = open_out_gen [Open_creat; Open_wronly] 0o600 test_file in
+          close_out oc;
+          Sys.remove test_file;
+          default_socket_path
+        with _ -> fallback_socket_path
+      ) else fallback_socket_path
+    )
+
+let socket_path = get_socket_path ()
 let backlog = 10
 
 let () =
