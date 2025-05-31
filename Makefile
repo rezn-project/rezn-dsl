@@ -32,6 +32,8 @@ stage:
 	cp packaging/postinst.sh postinst.sh
 	cp packaging/postrm.sh postrm.sh
 
+	chmod +x postinst.sh postrm.sh
+
 	chmod +x $(STAGING_DIR)/opt/$(APP_NAME)/bin/server
 	chmod +x $(STAGING_DIR)/opt/$(APP_NAME_CLI)/bin/reznc
 	chmod +x $(STAGING_DIR)/opt/$(APP_NAME_CLI)/bin/rezn-verify

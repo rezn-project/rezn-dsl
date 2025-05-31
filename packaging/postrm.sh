@@ -16,7 +16,8 @@ if [ -f "/lib/systemd/system/$SERVICE_NAME" ]; then
 fi
 
 echo "Removing rezndsl-cli symlinks..." 
-rm -f /usr/local/bin/rezndsl-cli
+rm -f /usr/local/bin/reznc
+rm -f /usr/local/bin/rezn-verify
 
 if [ "$1" = "purge" ]; then
   echo "--- Starting purge actions ---"
