@@ -1,12 +1,17 @@
-let key_file = "rezn.key"
-let pub_file = "rezn.pub"
+let key_dir = "/etc/rezndsl"
+let key_file = Filename.concat key_dir "rezn.key"
+let pub_file = Filename.concat key_dir "rezn.pub"
 
 let ensure_keys () =
+  try
+    Unix.mkdir key_dir 0o700
+  with Unix.Unix_error (Unix.EEXIST, _, _) -> ();
+
   try
     let fd =
       Unix.openfile key_file [ Unix.O_WRONLY; Unix.O_CREAT; Unix.O_EXCL ] 0o600
     in
-    Printf.printf "Generating new Ed25519 keypair...\n%!";
+    Printf.printf "Generating new Ed25519 keypair at %s...\n%!" key_file;
     Sodium.Random.stir ();
     let sk, pk = Sodium.Sign.random_keypair () in
     let sk_bytes = Sodium.Sign.Bytes.of_secret_key sk in
@@ -18,9 +23,15 @@ let ensure_keys () =
 
     Out_channel.with_open_bin pub_file (fun out_pub ->
       Out_channel.output_bytes out_pub pk_bytes
-    )
-  with Unix.Unix_error (Unix.EEXIST, _, _) ->
-    () (* Key already exists — do nothing *)
+    );
+
+    Unix.chmod key_file 0o600;
+    Unix.chmod pub_file 0o644;
+  with
+  | Unix.Unix_error (Unix.EEXIST, _, _) -> ()
+  | exn ->
+      Printf.eprintf "Key generation failed: %s\n%!" (Printexc.to_string exn);
+      raise exn
 
 let get_sk () : Sodium.secret Sodium.Sign.key =
   try
@@ -31,7 +42,7 @@ let get_sk () : Sodium.secret Sodium.Sign.key =
     let sk = Sodium.Sign.Bytes.to_secret_key sk_bytes in
     sk
   with
-  | Sys_error msg -> 
+  | Sys_error msg ->
       failwith ("Failed to read secret key file: " ^ msg)
   | Sodium.Verification_failure ->
       failwith ("Invalid secret key format in file: " ^ key_file)

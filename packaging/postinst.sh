@@ -18,6 +18,7 @@ fi
 
 mkdir -p /etc/rezndsl
 chown "$USER:$GROUP" /etc/rezndsl
+chmod 700 /etc/rezndsl
 
 echo "Installing default environment template at $DEFAULT_ENV_FILE"
 chown "$USER:$GROUP" "$DEFAULT_ENV_FILE"
