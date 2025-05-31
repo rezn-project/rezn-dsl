@@ -12,7 +12,7 @@ CLI_BUILD_DIR=cli
 all: build stage deb
 
 build:
-	dune build
+	opam exec -- dune build
 
 stage:
 	rm -rf $(STAGING_DIR)
