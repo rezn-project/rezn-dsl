@@ -3,7 +3,7 @@ set -e
 USER="rezndsl"
 GROUP="rezndsl"
 ENV_FILE="/etc/rezndsl/rezndsl.env"
-DEFAULT_ENV_FILE="/etc/rezndsl/rezndslawpair.env.default"
+DEFAULT_ENV_FILE="/etc/rezndsl/rezndsl.env.default"
 CONFIG_DIR="/etc/rezndsl"
 LOG_DIR="/var/log/rezndsl"
 SERVICE_NAME="rezndsl.service"
