@@ -21,6 +21,8 @@
  (synopsis "DSL for Rezn")
  (description "Rezn is a domain-specific language (DSL) for Rezn")
  (depends
+  ctypes
+  ctypes-foreign
   (base64
    (and
     (>= 3.5.0)

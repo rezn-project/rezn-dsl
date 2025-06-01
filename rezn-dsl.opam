@@ -9,6 +9,8 @@ homepage: "https://github.com/rezn-project/rezn-dsl"
 bug-reports: "https://github.com/rezn-project/rezn-dsl/issues"
 depends: [
   "dune" {>= "3.17"}
+  "ctypes"
+  "ctypes-foreign"
   "base64" {>= "3.5.0" & < "4.0.0"}
   "cmdliner" {>= "1.3.0"}
   "digestif" {>= "1.3.0"}

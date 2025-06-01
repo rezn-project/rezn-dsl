@@ -9,7 +9,16 @@ let run input_file output_file_opt =
 
     let prog = parse_file input_file in
     let bundle = Rezn.Sign.generate_signed_bundle prog sk in
-    let json_str = Yojson.Safe.pretty_to_string bundle in
+    let json_str =
+      try
+        bundle
+        |> Yojson.Safe.to_string
+        |> Rezn.Jcs_bindings.canonicalize
+      with
+      | Failure msg ->
+          prerr_endline ("Error during JSON canonicalization: " ^ msg);
+          exit 1
+      in
 
     (match output_file_opt with
      | Some path ->

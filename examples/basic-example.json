@@ -1,0 +1,29 @@
+{
+  "program": [
+    {
+      "kind": "pod",
+      "name": "nginx",
+      "fields": {
+        "image": "nginx:alpine",
+        "replicas": 2,
+        "ports": [ 443, 80 ],
+        "secure": true
+      }
+    },
+    {
+      "kind": "service",
+      "name": "nginx-service",
+      "fields": { "selector": "nginx", "port": 80 }
+    },
+    {
+      "kind": "volume",
+      "name": "shared-cache",
+      "fields": { "mount": "/cache" }
+    },
+    {
+      "kind": "enum",
+      "name": "env",
+      "options": [ "prod", "staging", "dev" ]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ Alpha status. It parses a declarative configuration language and emits structure
 - Parser implemented in OCaml with Menhir and ocamllex
 - Typed literals: `int`, `string`, `bool`, `list`
 - Top-level declarations: `pod`, `service`, `volume`, `enum`
-- Emits JSON as intermediate representation (IR)
+- Emits canonicalized JSON (RFC 8785) as intermediate representation (IR); leverages C++ based library through FFI
 - Lexer and parser written from scratch
 - Single binary CLI
 
@@ -65,6 +65,23 @@ Output (formatted):
     "options": ["dev", "prod"]
   }
 ]
+```
+
+## Download dependency
+
+- wget `https://github.com/rezn-project/rezn-jcsd/releases/download/v0.0.2/libreznjcs_amd64.so` (replace amd64 with your arch; check available architectures)
+- Rename to `libreznjcs.so`
+- Set `REZNJCS_LIB_PATH`, i.e. `REZNJCS_LIB_PATH=/path/to/libreznjcs.so`
+
+These are the paths tried by the application:
+
+```ocaml
+let try_paths = [
+  Sys.getenv_opt "REZNJCS_LIB_PATH";
+  Some "/usr/lib/rezndsl/libreznjcs.so";
+  Some "./libreznjcs.so";
+  Some "./lib/libreznjcs.so";
+] |> List.filter_map Fun.id
 ```
 
 ### Running the Unix socket

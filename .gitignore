@@ -34,3 +34,5 @@ rezn.pub
 dist
 
 *.deb
+
+*.so
