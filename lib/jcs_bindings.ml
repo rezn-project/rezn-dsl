@@ -1,6 +1,11 @@
 open Ctypes
 open Foreign
 
+let debug_enabled =
+  match Sys.getenv_opt "DEBUG" with
+  | Some "1" | Some "true" | Some "yes" -> true
+  | _ -> false
+
 let try_paths = [
   Sys.getenv_opt "REZNJCS_LIB_PATH";
   Some "/usr/lib/rezndsl/libreznjcs.so";
@@ -14,7 +19,8 @@ let lib =
     | path :: rest ->
         try Dl.dlopen ~filename:path ~flags:[Dl.RTLD_NOW]
         with Dl.DL_error err ->
-          prerr_endline ("[WARN] Failed to load: " ^ path ^ " - " ^ err);
+          if debug_enabled then
+            prerr_endline ("[WARN] Failed to load: " ^ path ^ " - " ^ err);
           try_load rest
   in
   try_load try_paths
