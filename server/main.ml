@@ -60,7 +60,9 @@ let () =
     let out_chan = Unix.out_channel_of_descr client_fd in
 
     let respond json =
-      Yojson.Safe.to_string json |> output_string out_chan;
+      Yojson.Safe.to_string json 
+      |> Rezn.Jcs_bindings.canonicalize
+      |> output_string out_chan;
       output_char out_chan '\n';
       flush out_chan
     in

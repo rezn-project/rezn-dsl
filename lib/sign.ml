@@ -5,9 +5,10 @@ let sign_json sk json_str =
 let generate_signed_bundle (prog : Ast.program) (sk : Sodium.secret Sodium.Sign.key) : Yojson.Safe.t =
   let json = Codegen.program_to_json prog in
   let json_str = Yojson.Safe.to_string json in
+  let canon_ir = Jcs_bindings.canonicalize json_str in
 
   (* Hash the canonical program *)
-  let hash = Digestif.SHA256.digest_string json_str in
+  let hash = Digestif.SHA256.digest_string canon_ir in
   let hex = Digestif.SHA256.to_hex hash in
   Printf.printf "Signature generation hash: %s\n%!" hex;
 

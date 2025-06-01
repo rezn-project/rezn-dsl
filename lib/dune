@@ -1,7 +1,7 @@
 (library
  (name rezn)
- (modules ast frontend lexer keys parser codegen sign verify)
- (libraries base64 digestif sodium unix yojson))
+ (modules ast frontend lexer keys parser codegen sign verify jcs_bindings)
+ (libraries base64 ctypes ctypes.foreign digestif sodium unix yojson))
 
 (menhir
  (modules parser))
