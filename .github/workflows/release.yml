@@ -55,13 +55,24 @@ jobs:
           cp *.deb dist/
 
       - name: Create tarball of binaries
-        run: tar -czvf dist/rezn-dsl_amd64.tar.gz -C dist reznc server verify
+        run: |
+          VERSION=${{ github.ref_name }}
+          mkdir -p dist/rezn-dsl_${VERSION}_amd64
+
+          # Copy the binaries
+          cp dist/reznc dist/server dist/verify dist/rezn-dsl_${VERSION}_amd64/
+
+          # Copy the shared library from the built .deb path
+          cp dist/deb/rezndsl/usr/lib/rezndsl/libreznjcs.so dist/rezn-dsl_${VERSION}_amd64/
+
+          # Create the tarball
+          tar -czvf dist/rezn-dsl_${VERSION}_amd64.tar.gz -C dist rezn-dsl_${VERSION}_amd64
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/*.tar.gz
+            dist/rezn-dsl_*.tar.gz
             dist/*.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
