@@ -31,12 +31,20 @@ let rezn_free =
     (ptr char @-> returning void)
 
 let canonicalize json =
-  let ptr = rezn_canonicalize json in
-  if Ctypes.is_null ptr then
-    failwith "Canonicalization failed: null pointer"
+  if String.length json = 0 then
+    failwith "Canonicalization failed: empty JSON string"
   else
-    let len = Unsigned.Size_t.to_int (strlen ptr) in
-    let result = string_from_ptr ptr ~length:len in
-    rezn_free ptr;
-    result
+    let ptr = rezn_canonicalize json in
+    if Ctypes.is_null ptr then
+      failwith ("Canonicalization failed: invalid JSON or library error for input: "
+                ^ String.sub json 0 (min 100 (String.length json)))
+    else
+      let len = Unsigned.Size_t.to_int (strlen ptr) in
+      if len = 0 then (
+        rezn_free ptr;
+        failwith "Canonicalization failed: empty result"
+      ) else
+        let result = string_from_ptr ptr ~length:len in
+        rezn_free ptr;
+        result
 

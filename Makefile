@@ -6,7 +6,7 @@ BUILD_DIR=_build/default
 STAGING_DIR=dist/deb/$(APP_NAME)
 DEB_NAME=$(APP_NAME)_$(VERSION)_$(ARCH).deb
 CLI_BUILD_DIR=cli
-REZNJCSD_URL=https://github.com/rezn-project/rezn-jcsd/releases/download/v0.0.2/libreznjcs_amd64.so
+REZNJCSD_URL=https://github.com/rezn-project/rezn-jcsd/releases/download/v0.0.2/libreznjcs_$(ARCH).so
 REZNJCSD_FILENAME=libreznjcs.so
 
 .PHONY: all build stage deb clean
