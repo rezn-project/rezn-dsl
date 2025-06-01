@@ -187,7 +187,7 @@ dune exec rezn examples/nginx.rezn
 ## Running Tests
 
 ```bash
-dune runtest
+REZNJCS_LIB_PATH=/path/to/libreznjcs.so dune runtest
 ````
 
 ## Roadmap
