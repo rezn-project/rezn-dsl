@@ -7,12 +7,7 @@ let generate_signed_bundle (prog : Ast.program) (sk : Sodium.secret Sodium.Sign.
   let json_str = Yojson.Safe.to_string json in
   let canon_ir = Jcs_bindings.canonicalize json_str in
 
-  (* Hash the canonical program *)
-  let hash = Digestif.SHA256.digest_string canon_ir in
-  let hex = Digestif.SHA256.to_hex hash in
-  Printf.printf "Signature generation hash: %s\n%!" hex;
-
-  let signature = Sodium.Sign.Bytes.sign_detached sk (Bytes.of_string json_str) in
+  let signature = Sodium.Sign.Bytes.sign_detached sk (Bytes.of_string canon_ir) in
   let signature_bytes = Sodium.Sign.Bytes.of_signature signature in
   let sig_b64 = Base64.encode_exn (Bytes.to_string signature_bytes) in
   let pk = Sodium.Sign.secret_key_to_public_key sk in

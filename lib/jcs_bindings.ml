@@ -1,8 +1,23 @@
 open Ctypes
 open Foreign
 
+let try_paths = [
+  Sys.getenv_opt "REZNJCS_LIB_PATH";
+  Some "/usr/lib/rezndsl/libreznjcs.so";
+  Some "./libreznjcs.so";
+  Some "./lib/libreznjcs.so";
+] |> List.filter_map Fun.id
+
 let lib =
-  Dl.dlopen ~filename:"libreznjcs.so" ~flags:[Dl.RTLD_NOW]
+  let rec try_load = function
+    | [] -> failwith "Could not locate libreznjcs.so (tried REZNJCS_LIB_PATH and fallback paths)"
+    | path :: rest ->
+        try Dl.dlopen ~filename:path ~flags:[Dl.RTLD_NOW]
+        with Dl.DL_error err ->
+          prerr_endline ("[WARN] Failed to load: " ^ path ^ " - " ^ err);
+          try_load rest
+  in
+  try_load try_paths
 
 let strlen =
   foreign "strlen" (ptr char @-> returning size_t)

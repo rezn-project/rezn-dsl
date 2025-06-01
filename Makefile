@@ -6,19 +6,31 @@ BUILD_DIR=_build/default
 STAGING_DIR=dist/deb/$(APP_NAME)
 DEB_NAME=$(APP_NAME)_$(VERSION)_$(ARCH).deb
 CLI_BUILD_DIR=cli
+REZNJCSD_URL=https://github.com/rezn-project/rezn-jcsd/releases/download/v0.0.2/libreznjcs_amd64.so
+REZNJCSD_FILENAME=libreznjcs.so
 
 .PHONY: all build stage deb clean
 
-all: build stage deb
+all: prep build stage deb
 
-build:
-	opam exec -- dune build
-
-stage:
+prep:
 	rm -rf $(STAGING_DIR)
+	mkdir -p $(STAGING_DIR)/usr/lib/$(APP_NAME)
 	mkdir -p $(STAGING_DIR)/opt/$(APP_NAME)/bin
 	mkdir -p $(STAGING_DIR)/opt/$(APP_NAME_CLI)/bin
 	mkdir -p $(STAGING_DIR)/etc/$(APP_NAME)
+
+build: fetch-libreznjcs
+	opam exec -- dune build
+
+fetch-libreznjcs:
+	@if [ ! -f $(STAGING_DIR)/usr/lib/$(APP_NAME)/$(REZNJCSD_FILENAME) ]; then \
+		echo "Downloading libreznjcs.so..."; \
+		curl -sSL $(REZNJCSD_URL) -o $(STAGING_DIR)/usr/lib/$(APP_NAME)/$(REZNJCSD_FILENAME); \
+		chmod 644 $(STAGING_DIR)/usr/lib/$(APP_NAME)/$(REZNJCSD_FILENAME); \
+	fi
+
+stage:
 	mkdir -p $(STAGING_DIR)/lib/systemd/system
 	mkdir -p $(STAGING_DIR)/etc/logrotate.d
 

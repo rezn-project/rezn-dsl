@@ -9,7 +9,7 @@ let run input_file output_file_opt =
 
     let prog = parse_file input_file in
     let bundle = Rezn.Sign.generate_signed_bundle prog sk in
-    let json_str = Yojson.Safe.pretty_to_string bundle in
+    let json_str = Yojson.Safe.to_string bundle |> Rezn.Jcs_bindings.canonicalize in
 
     (match output_file_opt with
      | Some path ->
