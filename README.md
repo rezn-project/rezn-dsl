@@ -84,6 +84,8 @@ let try_paths = [
 ] |> List.filter_map Fun.id
 ```
 
+If you encounter issues related to the shared library, try enabling `DEBUG=1`
+
 ### Running the Unix socket
 
 `./_build/default/server/main.exe ` -> `Signer service ready on /tmp/rezn_signer.sock`
