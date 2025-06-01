@@ -58,7 +58,7 @@ jobs:
           cp *.deb dist/
 
       - name: Create tarball of binaries
-        run: tar -czvf dist/rezn-dsl.tar.gz -C dist reznc server verify
+        run: tar -czvf dist/rezn-dsl_amd64.tar.gz -C dist reznc server verify
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v2
