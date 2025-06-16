@@ -92,9 +92,9 @@ If you encounter issues related to the shared library, try enabling `DEBUG=1`
 
 #### Setup
 
-The commands here assume you have installed `socat`, i.e.
+The commands here assume you have installed `curl`, i.e.
 
-`sudo apt install socat`
+`sudo apt install curl`
 
 #### Signing
 
@@ -107,7 +107,15 @@ Do **not** reformat, reserialize, pretty-print, or modify the JSON in any way.
 > to be **verified, not edited**. If you need to change the program, update the original
 > `.rezn` source and re-sign it.
 
-`cat ./examples/basic-example.rezn | jq -Rs '{op: "sign", source: .}' | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
+```bash
+cat ./examples/basic-example.rezn \
+| jq -Rs '{op:"sign", source:.}' \
+| curl --unix-socket /tmp/rezndsl.sock \
+       -H 'Content-Type: application/json' \
+       -d @- \
+       http://localhost/          # path is ignored for UDS
+
+```
 
 should emit (below example is pretty-printed):
 
@@ -165,7 +173,13 @@ should emit (below example is pretty-printed):
 
 #### Verifying
 
-`jq '{op: "verify", bundle: .}' ./examples/basic-example.ir.json | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
+```bash
+jq '{op:"verify", bundle:.}' ./examples/basic-example.ir.json \
+| curl --unix-socket /tmp/rezndsl.sock \
+       -H 'Content-Type: application/json' \
+       -d @- http://localhost/
+
+```
 
 Should emit
 
