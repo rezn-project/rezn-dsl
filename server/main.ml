@@ -58,8 +58,20 @@ let handle_raw raw =
 let api_handler req =
   let* body  = Dream.body req in
   let* json  = handle_raw body in
-  let canon  = Yojson.Safe.to_string json
-               |> Rezn.Jcs_bindings.canonicalize in
+
+  (* canonicalisation used to be unchecked; wrap it now *)
+  let canon =
+    try
+      Yojson.Safe.to_string json
+      |> Rezn.Jcs_bindings.canonicalize
+    with exn ->
+      Printf.eprintf "Canonicalisation error: %s\n%!"
+        (Printexc.to_string exn);
+      Yojson.Safe.to_string
+        (`Assoc [ "status",  `String "error";
+                  "message", `String "Internal error" ])
+  in
+
   Dream.json canon
 
 (* ---------- graceful shutdown ---------- *)
