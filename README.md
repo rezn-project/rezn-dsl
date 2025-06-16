@@ -165,7 +165,7 @@ should emit (below example is pretty-printed):
 
 #### Verifying
 
-`jq '{op: "verify", bundle: .}' ./examples/basic-example.ir.json | socat - UNIX-CONNECT:/tmp/rezn_signer.sock`
+`jq '{op: "verify", bundle: .}' ./examples/basic-example.ir.json | socat - UNIX-CONNECT:/tmp/rezndsl.sock`
 
 Should emit
 
