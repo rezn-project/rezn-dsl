@@ -3,6 +3,18 @@ pod "nginx" {
   replicas = 2
   ports = [80, 443]
   secure = true
+
+  env = {
+    DATABASE_URL = {
+      from = "secret"
+      name = "db-prod-url"
+    }
+    API_KEY = {
+      from = "secret"
+      name = "api-token"
+    }
+    DEBUG = "false"
+  }
 }
 
 service "nginx-service" {
