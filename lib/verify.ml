@@ -9,7 +9,8 @@ let verify_bundle (bundle : Yojson.Safe.t) : bool =
                     List.assoc_opt "pub" sig_fields with
               | Some (`String "ed25519"), Some (`String sig_b64), Some (`String pub_b64) ->
                   let json_str = Yojson.Safe.to_string program_json in
-                  let msg = Bytes.of_string json_str in
+                  let canonical = Jcs_bindings.canonicalize json_str in
+                  let msg = Bytes.of_string canonical in
 
                   let signature =
                     match Base64.decode sig_b64 with

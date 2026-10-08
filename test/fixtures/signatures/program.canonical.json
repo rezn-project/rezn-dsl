@@ -1,0 +1,1 @@
+[{"fields":{"image":"nginx:alpine","ports":[80,81],"replicas":1},"kind":"pod","name":"web"},{"fields":{"image":"httpd:alpine","ports":[80],"replicas":0},"kind":"pod","name":"side"}]

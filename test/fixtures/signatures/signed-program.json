@@ -1,0 +1,32 @@
+{
+  "program": [
+    {
+      "kind": "pod",
+      "name": "web",
+      "fields": {
+        "replicas": 1,
+        "ports": [
+          80,
+          81
+        ],
+        "image": "nginx:alpine"
+      }
+    },
+    {
+      "name": "side",
+      "fields": {
+        "ports": [
+          80
+        ],
+        "replicas": 0,
+        "image": "httpd:alpine"
+      },
+      "kind": "pod"
+    }
+  ],
+  "signature": {
+    "algorithm": "ed25519",
+    "pub": "/ZutTbYeVq8cBTprH0RyQHv8RabhlDKOvEZ9HPRDjYo=",
+    "sig": "WMsxtAX3z4X8xea5GqpaJNwiJ7JaD0FwwH671KatAESjx9LlKxwhkSE+wgLICOr+RKPNGoy7/fSnhqY/ZJDnBg=="
+  }
+}

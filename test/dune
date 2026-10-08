@@ -1,7 +1,8 @@
 (library
  (name parser_tests)
- (modules parser_tests)
- (inline_tests)
+ (modules parser_tests signature_tests)
+ (inline_tests
+  (deps (glob_files fixtures/signatures/*)))
  (preprocess
   (pps ppx_expect))
- (libraries rezn yojson))
+ (libraries rezn yojson sodium base64))
